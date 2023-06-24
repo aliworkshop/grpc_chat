@@ -34,7 +34,7 @@ func Client(userId string) ClientUc {
 	}
 }
 
-func (c _client) Run(ctx context.Context) error {
+func (c *_client) Run(ctx context.Context) error {
 	connCtx, cancel := context.WithTimeout(ctx, time.Second)
 	defer cancel()
 	conn, err := grpc.DialContext(connCtx, "localhost:8060", grpc.WithInsecure(), grpc.WithBlock())
@@ -50,7 +50,7 @@ func (c _client) Run(ctx context.Context) error {
 	return errors.WithMessage(err, "stream error")
 }
 
-func (c _client) stream(ctx context.Context) error {
+func (c *_client) stream(ctx context.Context) error {
 	md := metadata.New(map[string]string{userHeader: c.UserId})
 	ctx = metadata.NewOutgoingContext(ctx, md)
 
@@ -69,7 +69,7 @@ func (c _client) stream(ctx context.Context) error {
 	return c.receive(client)
 }
 
-func (c _client) receive(sc proto.Chat_StreamClient) error {
+func (c *_client) receive(sc proto.Chat_StreamClient) error {
 	for {
 		res, err := sc.Recv()
 
@@ -86,7 +86,7 @@ func (c _client) receive(sc proto.Chat_StreamClient) error {
 	}
 }
 
-func (c _client) send(client proto.Chat_StreamClient) {
+func (c *_client) send(client proto.Chat_StreamClient) {
 	sc := bufio.NewScanner(os.Stdin)
 	sc.Split(bufio.ScanLines)
 
